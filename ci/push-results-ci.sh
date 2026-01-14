@@ -3,7 +3,7 @@ set -euo pipefail
 
 echo "Collecting CI results"
 
-RESULTS_REPO_URL="https://gitlab.eterfund.ru/vanomj/epm-play-ci-results.git"
+RESULTS_REPO_URL="https://gitlab.eterfund.ru/etersoft/epm-play-ci-results.git"
 WORKDIR="results"
 
 git clone "$RESULTS_REPO_URL" "$WORKDIR"

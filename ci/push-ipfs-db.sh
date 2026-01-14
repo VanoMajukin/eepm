@@ -4,7 +4,7 @@ set -euo pipefail
 echo "=== Publishing IPFS DB ==="
 
 # repo vars
-IPFS_REPO_URL="https://gitlab.eterfund.ru/vanomj/epm-play-ci-results.git"
+IPFS_REPO_URL="https://gitlab.eterfund.ru/etersoft/epm-play-ci-results.git"
 WORKDIR="ipfs-results"
 
 # check
