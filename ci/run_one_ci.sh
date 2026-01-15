@@ -26,7 +26,7 @@ mkdir -p "$PLAY_DIR" "$ERR_DIR" "$LOG_DIR" "$REQ_DIR"
 cd "$REPO_ROOT/bin"
 
 # IPFS
-if [ -n "${CI_SKIP_IPFS_UPDATE:-}" ]; then
+if [ -z "${CI_IPFS_UPDATE:-}" ]; then
   export EPM_IPFS_DB_UPDATE_SKIPPING=1
 fi
 export EGET_IPFS_API=/ip4/91.232.225.49/tcp/5001

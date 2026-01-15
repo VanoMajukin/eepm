@@ -5,7 +5,7 @@
 систем.
 
 Как это работает
-- Планировщик запускает задачу `scheduled_ci` из `.gitlab-ci.yml`.
+- Планировщик запускает задачу `prepare` из `.gitlab-ci.yml`.
 - Задача выполняет `bash ci/gen-ci.sh > .gitlab-ci.yml` и пушит результат в
   ветку `ci-generated`.
 - Сгенерированный пайплайн выполняет:
@@ -16,16 +16,15 @@
 
 Режимы работы
 - Во всех тестах используется флаг `--latest`.
-- Стадии IPFS-загрузки управляются переменной `CI_SKIP_DOWNLOAD`.
-  - Если `CI_SKIP_DOWNLOAD` задана, стадии `download_test` и
-    `publish_download_logs` пропускаются.
-  - Если `CI_SKIP_DOWNLOAD` не задана, используется IPFS-режим с
-    предзагрузкой и публикацией базы.
+- Стадии IPFS-загрузки управляются переменной `CI_DOWNLOAD`.
+  - Если `CI_DOWNLOAD` задана, включаются `download_test` и
+    `publish_download_logs`.
+  - Если `CI_DOWNLOAD` не задана, стадии IPFS пропускаются.
 
 Переменные планировщика (GitLab UI -> CI/CD -> Schedules -> Variables)
 - `CI_APPS`: список приложений для теста, разделенный пробелами.
   - Пример: `CI_APPS=firefox chrome`
-  - Если пусто или не задано, берутся все приложения из `./bin/epmp --short`.
+  - Если пусто или не задано, берутся все приложения из `epm play --short`.
 - `CI_SYSTEMS`: список docker-образов для теста, разделенный пробелами.
   - Пример: `CI_SYSTEMS=alt:sisyphus debian:bookworm`
   - Если пусто или не задано, по умолчанию `alt:sisyphus debian:bookworm`.
@@ -49,13 +48,13 @@
     например `test_alt_ipfs`, `test_debian_latest`.
 
 Переменные IPFS
-- `CI_SKIP_DOWNLOAD`: отключает стадии загрузки и публикации IPFS базы.
-- `CI_SKIP_IPFS_UPDATE`: пропускает обновление IPFS базы во время теста.
+- `CI_DOWNLOAD`: включает стадии загрузки и публикации IPFS базы.
+- `CI_IPFS_UPDATE`: включает обновление IPFS базы во время теста.
 
 Переменные для копирования
 ```
 CI_APPS
 CI_SYSTEMS
-CI_SKIP_DOWNLOAD
-CI_SKIP_IPFS_UPDATE
+CI_DOWNLOAD
+CI_IPFS_UPDATE
 ```

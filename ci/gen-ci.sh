@@ -23,10 +23,10 @@ else
   systems="alt:sisyphus debian:bookworm"
 fi
 
-# IPFS download stage switch
-USE_DOWNLOAD=1
-if [ -n "${CI_SKIP_DOWNLOAD:-}" ]; then
-  USE_DOWNLOAD=0
+# IPFS download stage switch (off by default)
+USE_DOWNLOAD=0
+if [ -n "${CI_DOWNLOAD:-}" ]; then
+  USE_DOWNLOAD=1
 fi
 
 header
