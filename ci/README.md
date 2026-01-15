@@ -51,3 +51,11 @@
 Переменные IPFS
 - `CI_SKIP_DOWNLOAD`: отключает стадии загрузки и публикации IPFS базы.
 - `CI_SKIP_IPFS_UPDATE`: пропускает обновление IPFS базы во время теста.
+
+Переменные для копирования
+```
+CI_APPS
+CI_SYSTEMS
+CI_SKIP_DOWNLOAD
+CI_SKIP_IPFS_UPDATE
+```
