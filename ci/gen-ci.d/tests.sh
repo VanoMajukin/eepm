@@ -63,7 +63,6 @@ tests()
       else
         anchor="$(resolve_anchor "$system" "latest" "$safe_system")"
       fi
-      run_args="--latest ${app}"
 
       cat <<EOF
 test_${safe_app}_${safe_system}:
@@ -78,7 +77,7 @@ EOF
       fi
       cat <<EOF
   script:
-    - bash ./ci/run_one_ci.sh ${run_args}
+    - bash ./ci/run_one_ci.sh ${app}
 
 EOF
     done
