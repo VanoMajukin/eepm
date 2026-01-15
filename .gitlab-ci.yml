@@ -1,4 +1,4 @@
-scheduled_ci:
+prepare:
   stage: build
   image: alt:p11
   tags:
@@ -15,14 +15,3 @@ scheduled_ci:
     - git push -f origin ci-generated 2>/dev/null
   only:
     - schedules
-
-generate_ci:
-  stage: build
-  image: alt:p11
-  tags:
-    - access
-  only:
-    - devel
-  script:
-    - apt-get update && apt-get install -y git wget
-    - bash ci/ci-diff-apps.sh

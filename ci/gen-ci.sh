@@ -13,10 +13,17 @@ stages:
 EOF
 
 # Get applications list
-if [ "$#" -gt 0 ]; then
-  apps="$@"
+if [ -n "${CI_APPS:-}" ]; then
+  apps="$CI_APPS"
 else
   apps=$(./bin/epmp --short 2>/dev/null)
+fi
+
+# Get systems list
+if [ -n "${CI_SYSTEMS:-}" ]; then
+  systems="$CI_SYSTEMS"
+else
+  systems="alt:sisyphus debian:bookworm"
 fi
 
 #
@@ -84,65 +91,73 @@ cat <<'EOF'
 EOF
 
 #
-# -------- Stage: test (consumers) --------
+# -------- Stage: test templates --------
 #
-for app in $apps; do
-  safe_app="${app//[^a-zA-Z0-9_]/_}"
-
-  #
-  # ALT sisyphus
-  #
-  cat <<EOF
-test_${safe_app}_sisyphus:
+cat <<'EOF'
+.test_template: &test_template
   stage: test
   allow_failure: true
-  image: alt:sisyphus
   tags:
     - access
   dependencies:
     - publish_download_logs
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - epm-results
+
+.test_sisyphus: &test_sisyphus
+  image: alt:sisyphus
   before_script:
     - ./bin/epm -y repo set etersoft
     - ./bin/epm update
     - ./bin/epm -y install wget glibc-pthread file
     - mkdir -p /var/lib/eepm
     - cp ipfs/eget-ipfs-db.txt /var/lib/eepm/eget-ipfs-db.txt
-  script:
-    - bash ./ci/run_one_ci.sh ${app}
-  artifacts:
-    when: always
-    expire_in: 7 days
-    paths:
-      - epm-results
 
-EOF
-
-  #
-  # Debian bookworm 
-  #
-  cat <<EOF
-test_${safe_app}_debian:
-  stage: test
-  allow_failure: true
+.test_debian: &test_debian
   image: debian:bookworm
-  tags:
-    - access
-  dependencies:
-    - publish_download_logs
   before_script:
     - ./bin/epm update
     - ./bin/epm install -y bash wget ca-certificates coreutils file
     - mkdir -p /var/lib/eepm
     - cp ipfs/eget-ipfs-db.txt /var/lib/eepm/eget-ipfs-db.txt
-  script:
-    - bash ./ci/run_one_ci.sh ${app}
-  artifacts:
-    when: always
-    expire_in: 7 days
-    paths:
-      - epm-results
 
 EOF
+
+#
+# -------- Stage: test (consumers) --------
+#
+for app in $apps; do
+  safe_app="${app//[^a-zA-Z0-9_]/_}"
+
+  for system in $systems; do
+    case "$system" in
+      alt:sisyphus)
+        cat <<EOF
+test_${safe_app}_sisyphus:
+  <<: [*test_template, *test_sisyphus]
+  script:
+    - bash ./ci/run_one_ci.sh ${app}
+
+EOF
+        ;;
+      debian:bookworm)
+        cat <<EOF
+test_${safe_app}_debian:
+  <<: [*test_template, *test_debian]
+  script:
+    - bash ./ci/run_one_ci.sh ${app}
+
+EOF
+        ;;
+      *)
+        echo "ERROR: unknown system '$system' (use alt:sisyphus or debian:bookworm)" >&2
+        exit 1
+        ;;
+    esac
+  done
 done
 
 #
