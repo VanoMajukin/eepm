@@ -1,0 +1,50 @@
+# YAML anchors for test jobs and system-specific setup.
+.test_template: &test_template
+  stage: test
+  allow_failure: true
+  tags:
+    - access
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - epm-results
+
+.test_alt_ipfs: &test_alt_ipfs
+  before_script:
+    - ./bin/epm -y repo set etersoft
+    - ./bin/epm update
+    - ./bin/epm -y install wget glibc-pthread file
+    - mkdir -p /var/lib/eepm
+    - cp ipfs/eget-ipfs-db.txt /var/lib/eepm/eget-ipfs-db.txt
+
+.test_alt_latest: &test_alt_latest
+  before_script:
+    - ./bin/epm -y repo set etersoft
+    - ./bin/epm update
+    - ./bin/epm -y install wget glibc-pthread file
+    - mkdir -p /var/lib/eepm
+
+.test_debian_ipfs: &test_debian_ipfs
+  before_script:
+    - ./bin/epm update
+    - ./bin/epm install -y bash wget ca-certificates coreutils file
+    - mkdir -p /var/lib/eepm
+    - cp ipfs/eget-ipfs-db.txt /var/lib/eepm/eget-ipfs-db.txt
+
+.test_debian_latest: &test_debian_latest
+  before_script:
+    - ./bin/epm update
+    - ./bin/epm install -y bash wget ca-certificates coreutils file
+    - mkdir -p /var/lib/eepm
+
+.test_default_ipfs: &test_default_ipfs
+  before_script:
+    - ./bin/epm -y install '/usr/bin/wget' '/usr/bin/file' '/usr/bin/bash'
+    - mkdir -p /var/lib/eepm
+    - cp ipfs/eget-ipfs-db.txt /var/lib/eepm/eget-ipfs-db.txt
+
+.test_default_latest: &test_default_latest
+  before_script:
+    - ./bin/epm -y install '/usr/bin/wget' '/usr/bin/file' '/usr/bin/bash'
+    - mkdir -p /var/lib/eepm
