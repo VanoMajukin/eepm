@@ -26,15 +26,19 @@ mkdir -p "$PLAY_DIR" "$ERR_DIR" "$LOG_DIR" "$REQ_DIR"
 cd "$REPO_ROOT/bin"
 
 # IPFS
+PLAY_OPTS="--latest"
+if [ -n "${CI_USE_IPFS:-}" ]; then
+  PLAY_OPTS="$PLAY_OPTS --ipfs"
+  export EGET_IPFS_API=/ip4/91.232.225.49/tcp/5001
+fi
 if [ -z "${CI_IPFS_UPDATE:-}" ]; then
   export EPM_IPFS_DB_UPDATE_SKIPPING=1
 fi
-export EGET_IPFS_API=/ip4/91.232.225.49/tcp/5001
 
 echo "Installing $APP"
 
 set +e
-./epm play --latest --auto --ipfs "$APP" 2>&1 | tee "$LOG_DIR/$APP.log"
+./epm play $PLAY_OPTS --auto "$APP" 2>&1 | tee "$LOG_DIR/$APP.log"
 rc=${PIPESTATUS[0]}
 set -e
 

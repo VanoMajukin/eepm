@@ -13,4 +13,15 @@ EOF
   echo "  - test"
   echo "  - summary"
   echo
+
+  if [ "$USE_IPFS" -eq 1 ] || [ "$USE_IPFS_UPDATE" -eq 1 ]; then
+    echo "variables:"
+    if [ "$USE_IPFS" -eq 1 ]; then
+      echo "  CI_USE_IPFS: \"1\""
+    fi
+    if [ "$USE_IPFS_UPDATE" -eq 1 ]; then
+      echo "  CI_IPFS_UPDATE: \"1\""
+    fi
+    echo
+  fi
 }

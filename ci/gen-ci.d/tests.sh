@@ -51,7 +51,7 @@ tests()
   local template_anchor
   template_anchor="test_template"
 
-  local app system safe_app safe_system anchor run_args
+  local app system safe_app safe_system anchor
   for app in $apps; do
     safe_app="${app//[^a-zA-Z0-9_]/_}"
 
