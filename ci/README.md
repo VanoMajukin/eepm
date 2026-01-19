@@ -16,18 +16,30 @@
 
 Режимы работы
 - Во всех тестах используется флаг `--latest`.
-- Стадии IPFS-загрузки управляются переменной `CI_DOWNLOAD`.
+- Использование `--ipfs` управляется переменной `CI_USE_IPFS` (по умолчанию
+  выключено).
+- Стадии IPFS-загрузки управляются переменной `CI_DOWNLOAD` (по умолчанию
+  выключено).
   - Если `CI_DOWNLOAD` задана, включаются `download_test` и
     `publish_download_logs`.
   - Если `CI_DOWNLOAD` не задана, стадии IPFS пропускаются.
+  - Если `CI_DOWNLOAD` включена, `CI_USE_IPFS` включается автоматически.
 
 Переменные планировщика (GitLab UI -> CI/CD -> Schedules -> Variables)
+- Пресеты:
+  - `FULL_TEST`: полный прогон по IPFS на `alt:sisyphus` и `debian:bookworm`,
+    включает `CI_DOWNLOAD`, `CI_USE_IPFS` и `CI_IPFS_UPDATE`, тестирует все
+    приложения.
+  - `GET_VERSION`: сбор версий на `alt:p11`, без IPFS-стадий, тестирует все
+    приложения.
 - `CI_APPS`: список приложений для теста, разделенный пробелами.
   - Пример: `CI_APPS=firefox chrome`
   - Если пусто или не задано, берутся все приложения из `epm play --short`.
+  - Если задан `FULL_TEST` или `GET_VERSION`, `CI_APPS` игнорируется.
 - `CI_SYSTEMS`: список docker-образов для теста, разделенный пробелами.
   - Пример: `CI_SYSTEMS=alt:sisyphus debian:bookworm`
   - Если пусто или не задано, по умолчанию `alt:sisyphus debian:bookworm`.
+  - Если задан `FULL_TEST` или `GET_VERSION`, `CI_SYSTEMS` игнорируется.
 
 Допустимые значения CI_SYSTEMS
 - Любые docker-образы, например `alt:sisyphus`, `debian:bookworm`,
@@ -49,12 +61,16 @@
 
 Переменные IPFS
 - `CI_DOWNLOAD`: включает стадии загрузки и публикации IPFS базы.
+- `CI_USE_IPFS`: включает флаг `--ipfs` для `epm play`.
 - `CI_IPFS_UPDATE`: включает обновление IPFS базы во время теста.
 
 Переменные для копирования
 ```
+FULL_TEST
+GET_VERSION
 CI_APPS
 CI_SYSTEMS
 CI_DOWNLOAD
+CI_USE_IPFS
 CI_IPFS_UPDATE
 ```
