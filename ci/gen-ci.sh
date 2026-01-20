@@ -20,6 +20,8 @@ fi
 USE_DOWNLOAD=0
 USE_IPFS=0
 USE_IPFS_UPDATE=0
+RESULTS_DIR="experiments"
+RESULTS_LABEL="custom"
 
 if [ -n "$FULL_TEST" ]; then
   systems="alt:sisyphus debian:bookworm"
@@ -27,12 +29,16 @@ if [ -n "$FULL_TEST" ]; then
   USE_IPFS=1
   USE_IPFS_UPDATE=1
   CI_APPS=""
+  RESULTS_DIR="epm-results"
+  RESULTS_LABEL="full-test"
 elif [ -n "$GET_VERSION" ]; then
   systems="alt:p11"
   USE_DOWNLOAD=0
   USE_IPFS=0
   USE_IPFS_UPDATE=0
   CI_APPS=""
+  RESULTS_DIR="version"
+  RESULTS_LABEL="get-version"
 fi
 
 # Get applications list
