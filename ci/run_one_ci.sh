@@ -20,8 +20,9 @@ PLAY_DIR="$RESULTS_ROOT/epm-play-versions"
 ERR_DIR="$RESULTS_ROOT/epm-errors"
 LOG_DIR="$RESULTS_ROOT/epm-logs"
 REQ_DIR="$RESULTS_ROOT/epm-requires"
+FILES_DIR="$RESULTS_ROOT/epm-files"
 
-mkdir -p "$PLAY_DIR" "$ERR_DIR" "$LOG_DIR" "$REQ_DIR"
+mkdir -p "$PLAY_DIR" "$ERR_DIR" "$LOG_DIR" "$REQ_DIR" "$FILES_DIR"
 
 cd "$REPO_ROOT/bin"
 
@@ -53,6 +54,7 @@ if [ "$rc" -eq 0 ]; then
     2>"$ERR_DIR/$package_name" || true
 
   ./epm req "$package_name" >"$REQ_DIR/$package_name" 2>&1 || true
+  ./epm ql "$package_name" >"$FILES_DIR/$package_name" 2>&1 || true
 else
   echo "X $APP: FAIL"
   mv -vf "$LOG_DIR/$APP.log" "$ERR_DIR/$APP.log"
