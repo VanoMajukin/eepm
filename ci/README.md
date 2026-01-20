@@ -64,6 +64,16 @@
 - `CI_USE_IPFS`: включает флаг `--ipfs` для `epm play`.
 - `CI_IPFS_UPDATE`: включает обновление IPFS базы во время теста.
 
+Куда попадают результаты
+- `FULL_TEST`: `epm-play-ci-results/epm-results`.
+- `GET_VERSION`: `epm-play-ci-results/version`.
+- Любые пользовательские тесты: `epm-play-ci-results/experiments`.
+
+Метки коммитов результатов
+- `full-test` для `FULL_TEST`.
+- `get-version` для `GET_VERSION`.
+- `custom` для пользовательских тестов.
+
 Переменные для копирования
 ```
 FULL_TEST
