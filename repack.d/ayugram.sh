@@ -10,7 +10,7 @@ PRODUCTDIR=/opt/$PRODUCT
 
 . $(dirname $0)/common.sh
 
-# /usr/bin/AyuGram
+# /usr/bin/AyuGram test
 add_conflicts ayugram-desktop
 
 add_bin_link_command $PRODUCT $PRODUCTDIR/$PRODUCT
