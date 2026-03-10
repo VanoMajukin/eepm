@@ -1,5 +1,5 @@
 #!/bin/sh
-
+# test commit
 PKGNAME=ayugram
 SUPPORTEDARCHES="x86_64"
 VERSION="$2"
