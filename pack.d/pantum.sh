@@ -17,6 +17,9 @@ elif echo "$TAR" | grep -q "Pantum%20Linux%20Driver%20V.*.zip" ; then
 elif echo "$TAR" | grep -q "linux_pantum.7z" ; then
     erc --here "$TAR" || fatal
     return_tar linux_pantum.deb
+elif echo "$TAR" | grep -q "pantum-r_.*_amd64.deb_.zip" ; then
+    erc --here "$TAR" || fatal
+    return_tar pantum-r_*_amd64.deb
 elif echo "$TAR" | grep -q "pantum.*astra.*_amd64.zip" ; then
     erc --here "$TAR" || fatal
     return_tar pantum_*_amd64.deb

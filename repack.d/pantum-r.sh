@@ -27,3 +27,35 @@ remove_dir /usr/lib/arm-linux-gnueabihf
 
 # duplicates main files
 remove_dir /usr/local
+
+# Upstream deb carries temporary extracted libcupsimage files under /opt.
+remove_dir "/opt/$PRODUCT/temp"
+
+# Uses system Qt5 for the scanner GUI.
+ignore_lib_requires libQt5Core.so.5 libQt5Gui.so.5 libQt5Network.so.5 libQt5PrintSupport.so.5 libQt5Widgets.so.5
+add_unirequires libQt5Core.so.5 libQt5Gui.so.5 libQt5Network.so.5 libQt5PrintSupport.so.5 libQt5Widgets.so.5
+
+if ! is_soname_present libjbig.so.0 ; then
+    # Upstream links against obsolete libjbig.so.0; distros ship libjbig.so.2.1.
+    case "$(epm print info -s)" in
+        alt)
+            epm assure libjbig2.1 || fatal
+            jbig_req=libjbig2.1
+            ;;
+        fedora)
+            epm assure jbigkit-libs || fatal
+            jbig_req=libjbig.so.2.1
+            ;;
+        *)
+            epm assure libjbig.so.2.1 || fatal
+            jbig_req=libjbig.so.2.1
+            ;;
+    esac
+
+    is_soname_present libjbig.so.2.1 || fatal "Can't find libjbig.so.2.1"
+    ignore_lib_requires libjbig.so.0
+    mkdir -p "$BUILDROOT/usr/lib64" || fatal
+    ln -s "$(get_path_by_soname libjbig.so.2.1)" "$BUILDROOT/usr/lib64/libjbig.so.0" || fatal
+    pack_file /usr/lib64/libjbig.so.0
+    add_unirequires "$jbig_req"
+fi
