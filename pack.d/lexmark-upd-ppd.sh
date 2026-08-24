@@ -9,7 +9,16 @@ RETURNTARNAME="$2"
 BASENAME=$(basename $TAR .rpm)
 VERSION=$(echo $BASENAME | sed -e 's|Lexmark-UPD-PPD-Files-||' | sed -e 's|.x86_64||')
 
-erc --here unpack $TAR || fatal
+epm assure patool || fatal
+erc --here unpack "$TAR" || fatal
+
+# Some patool backends extract RPM as nested cpio payload instead of unpacking it.
+if [ -f "$BASENAME.cpio.gz" ] ; then
+    erc --here unpack "$BASENAME.cpio.gz" || fatal
+fi
+if [ -f "$BASENAME.cpio" ] ; then
+    erc --here unpack "$BASENAME.cpio" || fatal
+fi
 
 # Install PPDs
 # PPD_ROOT="usr/share/ppd"
