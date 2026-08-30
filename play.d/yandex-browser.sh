@@ -2,6 +2,7 @@
 
 BASEPKGNAME=yandex-browser
 SUPPORTEDARCHES="x86_64"
+# Keep stable and beta editions covered by PR tests.
 PRODUCTALT="stable beta"
 VERSION="$2"
 DESCRIPTION="Yandex browser from the official site"
