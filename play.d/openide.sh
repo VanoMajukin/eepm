@@ -1,6 +1,7 @@
 #!/bin/sh
 
 BASEPKGNAME=openIDE
+# Keep both editions covered by PR tests.
 PRODUCTALT="'' eap"
 SUPPORTEDARCHES="x86_64 aarch64"
 VERSION="$2"
