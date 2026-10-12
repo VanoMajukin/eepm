@@ -7,6 +7,7 @@ VERSION="$2"
 DESCRIPTION="Codex CLI is a coding agent from OpenAI that runs locally on your computer."
 URL="https://github.com/openai/codex"
 
+# CI test trigger: application with multiple editions.
 . $(dirname $0)/common.sh
 
 arch="$(epm print info -a)"
