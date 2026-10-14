@@ -6,6 +6,7 @@ VERSION="$2"
 DESCRIPTION="Qt 6 native file dialog integration for Trivalent"
 URL="https://github.com/secureblue/Trivalent"
 
+# CI test trigger for dependency grouping.
 . $(dirname $0)/common.sh
 
 arch="$(epm print info -a)"
