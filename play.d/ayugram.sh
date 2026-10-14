@@ -13,6 +13,7 @@ warn_version_is_not_supported
 
 # Official AyuGram Linux deb/AppImage builds are not published yet. The old
 # Arch binary package links against rolling Arch libraries and is not portable.
+# CI test trigger: single-edition application.
 epm assure ostree || fatal
 
 PKGURL=$(get_github_url "$FLATPAK_URL" "ayugram-desktop-*.flatpak")
