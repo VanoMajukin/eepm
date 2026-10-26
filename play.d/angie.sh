@@ -5,6 +5,10 @@ SKIPREPACK=1
 SUPPORTEDARCHES="x86_64 aarch64"
 DESCRIPTION="ANGIE (a web server, that was forked from nginx) from the official site"
 URL="https://angie.software/"
+REPOURL="https://download.en.angie.software/angie"
+LEGACY_REPOURL="https://download.angie.software/angie"
+GPGKEY="https://angie.software/keys/angie-signing.gpg"
+GPGKEYFILE="/etc/apt/trusted.gpg.d/angie-signing.gpg"
 
 . $(dirname $0)/common.sh
 
@@ -12,32 +16,54 @@ reponame=$(epm print info --repo-name)
 vendor=$(epm print info -s)
 version=$(epm print info --base-version)
 
+install_deb_key()
+{
+    local keyfile
+    keyfile="$(mktemp)" || fatal
+    eget --force -q -O "$keyfile" "$GPGKEY" || fatal
+    if [ "$(id -u)" = 0 ] ; then
+        install -m 0644 "$keyfile" "$GPGKEYFILE" || fatal
+    else
+        sudo install -m 0644 "$keyfile" "$GPGKEYFILE" || fatal
+    fi
+    rm -f "$keyfile"
+}
+
+# Migrate legacy Angie entries from sources.list to a named disabled repository.
+# EPM can temporarily enable only the latter for angie/<package> installs.
+case $(epm print info -g) in
+    apt-rpm)
+        epm --quiet repo remove "$LEGACY_REPOURL"
+        epm --quiet repo remove "$REPOURL"
+        ;;
+esac
+
 # Strict supported list
 case $(epm print info -e) in
     Alpine/3.*)
         epm install --skip-installed ca-certificates
         epm repo addkey angie "https://angie.software/keys/angie-signing.rsa"
-        epm repo add "https://download.angie.software/angie/alpine/v$version/main"
+        epm repo add "$REPOURL/alpine/v$version/main"
         ;;
     AstraLinuxSE/1.7*|AstraLinuxSE/1.8*)
         epm repo addkey angie "https://angie.software/keys/angie-signing.gpg"
-        epm repo add --disabled --name angie "deb https://download.angie.software/angie/astra-se/$version/ unstable main"
+        epm repo add --disabled --name angie "deb $REPOURL/astra-se/$version/ unstable main"
         ;;
     ALTLinux/p10)
         epm repo addkey angie "https://angie.software/keys/angie-signing.gpg" "EB8EAF3D4EF1B1ECF34865A2617AB978CB849A76" "Angie (Signing Key) <devops@tech.wbsrv.ru>"
-        epm repo add --disabled --name angie "rpm [angie] https://download.angie.software/angie/altlinux/10/ x86_64 main"
+        epm repo add --disabled --name angie "rpm [angie] $REPOURL/altlinux/10/ x86_64 main"
         ;;
     ALTLinux/p11|ALTLinux/Sisyphus)
         epm repo addkey angie "https://angie.software/keys/angie-signing.gpg" "EB8EAF3D4EF1B1ECF34865A2617AB978CB849A76" "Angie (Signing Key) <devops@tech.wbsrv.ru>"
-        epm repo add --disabled --name angie "rpm [angie] https://download.angie.software/angie/altlinux/11/ x86_64 main"
+        epm repo add --disabled --name angie "rpm [angie] $REPOURL/altlinux/11/ x86_64 main"
         ;;
     ALTLinux/c10f*)
         epm repo addkey angie "https://angie.software/keys/angie-signing.gpg" "EB8EAF3D4EF1B1ECF34865A2617AB978CB849A76" "Angie (Signing Key) <devops@tech.wbsrv.ru>"
-        epm repo add --disabled --name angie "rpm [angie] https://download.angie.software/angie/altlinux-sp/10/ x86_64 main"
+        epm repo add --disabled --name angie "rpm [angie] $REPOURL/altlinux-sp/10/ x86_64 main"
         ;;
     ALTLinux/c9f*|ALTLinux/c8*)
         epm repo addkey angie "https://angie.software/keys/angie-signing.gpg" "EB8EAF3D4EF1B1ECF34865A2617AB978CB849A76" "Angie (Signing Key) <devops@tech.wbsrv.ru>"
-        epm repo add --disabled --name angie "rpm [angie] https://download.angie.software/angie/altlinux-sp/8/ x86_64 main"
+        epm repo add --disabled --name angie "rpm [angie] $REPOURL/altlinux-sp/8/ x86_64 main"
         ;;
     AlmaLinux/*)
         epm repo addkey angie 'https://download.angie.software/angie/centos/$releasever/' "https://angie.software/keys/angie-signing.gpg" "Angie repo"
@@ -47,10 +73,13 @@ case $(epm print info -e) in
         epm repo addkey angie 'https://download.angie.software/angie/centos/$releasever/' "https://angie.software/keys/angie-signing.gpg" "Angie repo"
         #epm repo add 'https://download.angie.software/angie/centos/$releasever/'
         ;;
+    Fedora/*)
+        epm repo addkey angie "$REPOURL/fedora/$version/" "https://angie.software/keys/angie-signing.gpg.asc" "Angie repo"
+        ;;
     Debian/*)
-        epm install --skip-installed ca-certificates lsb-release
-        epm repo addkey angie "https://angie.software/keys/angie-signing.gpg"
-        epm repo add --disabled --name angie "deb https://download.angie.software/angie/debian/ $reponame main"
+        epm install --skip-installed adduser ca-certificates lsb-release
+        install_deb_key
+        epm repo add --disabled --name angie "deb [signed-by=$GPGKEYFILE] $REPOURL/debian/$version/ $reponame main"
         ;;
     Oracle/*)
         epm repo addkey angie 'https://download.angie.software/angie/oracle/$releasever/' "https://angie.software/keys/angie-signing.gpg" "Angie repo"
@@ -69,9 +98,9 @@ case $(epm print info -e) in
         #epm repo add 'https://download.angie.software/angie/rocky/$releasever/'
         ;;
     Ubuntu/*)
-        epm install --skip-installed ca-certificates lsb-release
-        epm repo addkey angie "https://angie.software/keys/angie-signing.gpg"
-        epm repo add --disabled --name angie "deb https://download.angie.software/angie/ubuntu/ $reponame main"
+        epm install --skip-installed adduser ca-certificates lsb-release
+        install_deb_key
+        epm repo add --disabled --name angie "deb [signed-by=$GPGKEYFILE] $REPOURL/ubuntu/$version/ $reponame main"
         ;;
     *)
         fatal "Unsupported distro $(epm print info -e). Ask application vendor for a support."
