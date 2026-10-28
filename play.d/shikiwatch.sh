@@ -8,6 +8,8 @@ URL="https://github.com/wheremyfiji/ShikiWatch"
 
 . $(dirname $0)/common.sh
 
+epm assure unsquashfs squashfs-tools || fatal
+
 arch=x64
 if [ "$VERSION" = "*" ] ; then
     PKGURL=$(get_github_url "https://github.com/wheremyfiji/ShikiWatch/" "${PKGNAME}-${VERSION}-linux-$arch.AppImage")
