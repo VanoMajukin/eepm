@@ -25,4 +25,10 @@ esac
 
 PKGURL="$URL/releases/download/v$VERSION/mimocode-linux-$arch.tar.gz"
 
+# alien drops RPM package replacement metadata when converting to DEB.
+# Remove the package previously published by epm play before installing its replacement.
+if [ "$(epm print info -p)" = "deb" ] && epm status --installed mimocode >/dev/null 2>&1 ; then
+    epm remove mimocode || fatal
+fi
+
 install_pack_pkgurl
